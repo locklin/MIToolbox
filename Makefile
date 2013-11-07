@@ -21,14 +21,14 @@
 #You should have received a copy of the GNU Lesser General Public License
 #along with MIToolbox.  If not, see <http://www.gnu.org/licenses/>.
 
-CXXFLAGS = -O3 -fPIC
+CXXFLAGS = -O3 -fPIC 
 COMPILER = gcc
 objects = ArrayOperations.o CalculateProbability.o Entropy.o \
           MutualInformation.o RenyiEntropy.o RenyiMutualInformation.o \
 		  WeightedEntropy.o WeightedMutualInformation.o
           
 libMIToolbox.so : $(objects)
-	$(COMPILER) $(CXXFLAGS) -shared -o libMIToolbox.so $(objects)
+	$(COMPILER) $(CXXFLAGS) -shared -o libMIToolbox.so $(objects) -lm
 
 WeightedMutualInformation.o: WeightedMutualInformation.c MIToolbox.h ArrayOperations.h \
  CalculateProbability.h WeightedEntropy.h

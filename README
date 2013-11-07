@@ -1,3 +1,16 @@
+J port notes:
+1) added -lm to Makefile (why is this missing?)
+2) added hooks for J (they work so far)
+3) added equal width discretization function
+
+ToDo:
+1) test all the functionality
+2) write a test script
+3) add more discretization features
+
+Forked from https://github.com/Craigacp/MIToolbox
+
+***************************************************************
 MIToolbox v2.0 for C/C++ and MATLAB/OCTAVE
 
 The MIToolbox contains a set of functions to calculate information theoretic
