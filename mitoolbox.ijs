@@ -1,6 +1,6 @@
 3 : 0''
 if. UNAME-:'Linux' do.
-NB.  LMI=: '"',~'"',jpath 'src/MIToolbox/libMIToolbox.so'
+NB.  LMI=: '"',~'"',jpath '/home/scott/src/MIToolbox/src/libMIToolbox.so'
 LMI=:'/home/scott/src/MIToolbox/libMIToolbox.so'
 elseif. UNAME-:'Darwin' do.  NB. I dunno where darwin keeps things any more
   LMI=: '"',~'"',jpath '~addons/math/mitoolbox/libMIToolbox.so'
