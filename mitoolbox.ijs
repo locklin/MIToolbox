@@ -1,7 +1,7 @@
 3 : 0''
 if. UNAME-:'Linux' do.
 NB.  LMI=: '"',~'"',jpath '/home/scott/src/MIToolbox/src/libMIToolbox.so'
-LMI=:'/home/scott/src/MIToolbox/libMIToolbox.so'
+  LMI=:'/home/scott/src/MIToolbox/src/libMIToolbox.so'
 elseif. UNAME-:'Darwin' do.  NB. I dunno where darwin keeps things any more
   LMI=: '"',~'"',jpath '~addons/math/mitoolbox/libMIToolbox.so'
 elseif. do.
@@ -11,6 +11,42 @@ end.
 
 
 cd=: 15!:0
+
+NB. *x totalcor y
+NB. -MI total correlation variant
+totalcor=: 4 : 0
+ hx=. histEnt x
+ hy=. histEnt y
+ hxy=. x histJointEnt y
+ (hx + hy - hxy ) % <. hx,hy
+)
+
+NB. *x mulcor y
+NB. -MI multiplicative correlation variant
+mulcor=: 4 : 0
+ hx=. histEnt x
+ hy=. histEnt y
+ hxy=. x histJointEnt y
+ (hx + hy - hxy ) %  %: hx * hy
+)
+
+NB. *x dualcor y
+NB. -MI mutual correlation variant
+dualcor=: 4 : 0
+ hx=. histEnt x
+ hy=. histEnt y
+ hxy=. x histJointEnt y
+ (hx + hy - hxy ) %  hxy
+)
+
+NB. *x symcor y
+NB. -MI symmetric correlation variant
+symcor=: 4 : 0
+ hx=. histEnt x
+ hy=. histEnt y
+ hxy=. x histJointEnt y
+ (hx + hy - hxy ) %  hx + hy
+)
 
 NB. *<n>discrete vals
 NB. -discretizes float vals into n equal width bins (default n to sqrt of sizeof vals)
@@ -33,132 +69,127 @@ bitsToNats=: 3 : 0
 NB. *histEnt data 
 NB. -calculates Shannon/Histogram entropy of data 
 histEnt =: 3 : 0
- 'data' =. y
- len=.  0 pick $ data
+ len=.  0 pick $ y
  cmd=. LMI,' calculateEntropy d *d i '
- 0 pick cmd cd data;len 
+ 0 pick cmd cd y;len 
 )
 
-NB. *histJointEnt data cond
+NB. *cond histJointEnt data 
 NB. -calculates Shannon/Histogram joint entropy of data conditioned on cond 
-histJointEnt =: 3 : 0
- 'data targ' =. y
- len=. 0 pick $ data
+histJointEnt =: 4 : 0
+ len=. 0 pick $ y
  cmd=. LMI,' calculateJointEntropy d *d *d i '
- 0 pick cmd cd data;targ;len 
+ 0 pick cmd cd y;x;len 
 )
 
-NB. *histMI data cond
+NB. *cond histMI data 
 NB. -calculates Shannon/Histogram MI of data conditioned on cond
-histMI =: 3 : 0
- 'data targ' =. y
- len=. 0 pick $ data
+histMI =: 4 : 0
+ len=. 0 pick $ y
  cmd=. LMI,' calculateMutualInformation d *d *d i '
- 0 pick cmd cd data;targ;len 
+ 0 pick cmd cd y;x;len 
 )
 
-NB. *histCondMI data cond
+NB. *cond histCondMI data 
 NB. -calculates Shannon/Histogram conditional MI of data conditioned on cond
-histCondMI =: 3 : 0
- 'data targ' =. y
- len=. 0 pick $ data
+histCondMI =: 4 : 0
+ len=. 0 pick $ y
  cmd=. LMI,' calculateConditionalMutualInformation d *d *d i '
- 0 pick cmd cd data;targ;len 
+ 0 pick cmd cd y;x;len 
 )
 
-NB. *renyiEnt alpha data
+NB. *alpha renyiEnt  data
 NB. -calculates Renyi entropy on data of order alpha
 NB. -remember, alpha must not be 1 for Renyi entropies; in this case
 NB. -use the histogram/Shannon entropy. Alpha between 0 and 1 weights
 NB. -events more evenly, and as alpha goes to inf, it weights highly probable
 NB. -events more heavily.
-renyiEnt =: 3 : 0
- 'alpha data' =. y
- len=. 0 pick $ data
+renyiEnt =: 4 : 0
+ 'alpha' =. x
+ len=. 0 pick $ y
  cmd=. LMI,' calculateRenyiEntropy d d *d i '
- 0 pick cmd cd alpha;data;len 
+ 0 pick cmd cd alpha;y;len 
 )
 
-NB. *conditionalRenyiEnt alpha data cond  
+NB. *alpha  cond conditionalRenyiEnt data
 NB. -calculates Renyi entropy of order alpha for data conditioned on cond
-conditionalRenyiEnt =: 3 : 0
- 'alpha data cond' =.y
- len=. 0 pick $ data
+conditionalRenyiEnt =: 4 : 0
+ 'alpha cond' =.y
+ len=. 0 pick $ y
  cmd=. LMI,' calculateConditionalRenyiEntropy d d *d *d i '
- 0 pick cmd cd alpha;data;cond;len 
+ 0 pick cmd cd alpha;y;cond;len 
 )
 
-NB. *jointRenyiEnt alpha data cond
+NB. *alpha cond jointRenyiEnt data 
 NB. -calculates joint Renyi entropy of data conditioned on cond
-jointRenyiEnt =: 3 : 0
-'alpha data second' =.y
- len=. 0 pick $ data
+jointRenyiEnt =: 4 : 0
+'alpha second' =.x
+ len=. 0 pick $ y
  cmd=. LMI,' calculateJointRenyiEntropy d d *d *d i '
- 0 pick cmd cd alpha;data;second;len 
+ 0 pick cmd cd alpha;y;second;len 
 )
 
-NB. *renyiMIDiv alpha data cond
+NB. *alpha cond renyiMIDiv data 
 NB. -calculates Renyi MI divergence of data conditioned on cond
-renyiMIDiv =: 3 : 0
- 'alpha data targ' =. y
- len=. 0 pick $ data
+renyiMIDiv =: 4 : 0
+ 'alpha targ' =. x
+ len=. 0 pick $ y
  cmd=. LMI,' calculateRenyiMIDivergence d d *d *d i '
- 0 pick cmd cd alpha;data;targ;len 
+ 0 pick cmd cd alpha;y;targ;len 
 )
 
-NB. *renyiMI alpha data cond
+NB. * alpha cond renyiMI data 
 NB. -calculates Renyi MI of data conditioned on cond
-renyiMI =: 3 : 0
-  'alpha data targ' =. y
- len=. 0 pick $ data
+renyiMI =: 4 : 0
+  'alpha targ' =. x
+ len=. 0 pick $ y
  cmd=. LMI,' calculateRenyiMIJoint d d *d *d i '
- 0 pick cmd cd alpha;data;targ;len 
+ 0 pick cmd cd alpha;y;targ;len 
 )
 
 
-NB. *histWeightEnt data weight
+NB. *weight histWeightEnt data 
 NB. calculates weighted entropy
-histWeightEnt=: 3 : 0
- 'data weight' =. y
- len=. 0 pick $ data
+histWeightEnt=: 4 : 0
+ len=. 0 pick $ y
  cmd=. LMI,' calculateWeightedEntropy d *d *d  i '
- 0 pick cmd cd data;weight;len 
+ 0 pick cmd cd y;x;len 
 )
 
-NB. *histWeightJointEnt data cond weight
+NB. *cond weight histWeightJointEnt data 
 NB. calculates weighted conditional entropy
-histWeightJointEnt=: 3 : 0
- 'data targ weight' =. y
- len=. 0 pick $ data
+histWeightJointEnt=: 4 : 0
+ 'targ weight' =. x
+ len=. 0 pick $ y
  cmd=. LMI,' calculateWeightedJointEntropy d *d *d *d i '
- 0 pick cmd cd data;targ;weight;len 
+ 0 pick cmd cd y;targ;weight;len 
 )
 
 NB. *histWeightCondEnt data cond weight
 NB. calculates weighted conditional entropy
-histWeightCondEnt=: 3 : 0
- 'data targ weight' =. y
- len=. 0 pick $ data
+histWeightCondEnt=: 4 : 0
+ 'targ weight' =. x
+ len=. 0 pick $ y
  cmd=. LMI,' calculateWeightedConditionalEntropy d *d *d *d i '
- 0 pick cmd cd data;targ;weight;len 
+ 0 pick cmd cd y;targ;weight;len 
 )
 
 
-NB. *histWeightMI data targ weight
+NB. *targ weight histWeightMI data 
 NB. calculates weighted histogram MI  
-histWeightMI=: 3 : 0
- 'data targ weight' =. y
- len=. 0 pick $ data
+histWeightMI=: 4 : 0
+ 'targ weight' =. x
+ len=. 0 pick $ y
  cmd=. LMI,' calculateWeightedMutualInformation d *d *d *d i '
- 0 pick cmd cd data;targ;weight;len 
+ 0 pick cmd cd y;targ;weight;len 
 )
 
 
-NB. *histWeightCondMI data targ weight
+NB. *targ weight histWeightCondMI data 
 NB. calculates weighted histogram conditional MI  
-histWeightCondMI=: 3 : 0
- 'data targ weight' =. y
- len=. 0 pick $ data
+histWeightCondMI=: 4 : 0
+ 'targ weight' =. x
+ len=. 0 pick $ y
  cmd=. LMI,' calculateWeightedConditionalMutualInformation d *d *d *d i '
- 0 pick cmd cd data;targ;weight;len 
+ 0 pick cmd cd y;targ;weight;len 
 )
